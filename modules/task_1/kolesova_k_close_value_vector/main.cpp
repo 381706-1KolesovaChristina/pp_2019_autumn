@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <random>
-#include "./close_value_vector.h"
+#include "../../../modules/task_1/kolesova_k_close_value_vector/close_value_vector.h"
 
 TEST(Test_close_value_vector, Test_close_value_one) {
   int rank;
