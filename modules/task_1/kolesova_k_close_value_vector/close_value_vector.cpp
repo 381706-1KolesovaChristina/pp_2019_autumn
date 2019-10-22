@@ -17,7 +17,7 @@ std::vector<int> getRandomVector(int size) {
 }
 
 int getMinDifferenceOne(const std::vector <int> Vec) {
-  int difMin = INT_MAX;
+  int difMin = std::INT_MAX;
   if (Vec.size() != 0) {
     for (int i = 0; i < static_cast<int>(Vec.size()) - 1; i++) {
       if (difMin > abs(Vec[i] - Vec[i + 1]))
@@ -28,10 +28,11 @@ int getMinDifferenceOne(const std::vector <int> Vec) {
 }
 
 int getMinDifference(const std::vector <int> Vec) {
-  int difMin = INT_MAX;
+  int difMin = std::INT_MAX;
   int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Status status;
 
   int modSize = Vec.size() - 1;
   int modf = modSize / size;
@@ -56,7 +57,7 @@ int getMinDifference(const std::vector <int> Vec) {
     difMin = getMinDifferenceOneProc(tmp);
     if (modf > 0) {
       for (int noProc = 1; noProc < size; noProc++) {
-        MPI_Recv(&procRest, 1, MPI_INT, proc, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&procRest, 1, MPI_INT, noProc, 0, MPI_COMM_WORLD, &status);
         difMin = std::min(difMin, procRest);
       }
     }
