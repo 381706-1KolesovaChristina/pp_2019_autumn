@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <climits>
 #include "../../../modules/task_1/kolesova_k_close_value_vector/close_value_vector.h"
 
 std::vector<int> getRandomVector(int size) {
@@ -17,7 +18,7 @@ std::vector<int> getRandomVector(int size) {
 }
 
 int getMinDifferenceOne(const std::vector <int> Vec) {
-  int difMin = std::INT_MAX;
+  int difMin = INT_MAX;
   if (Vec.size() != 0) {
     for (int i = 0; i < static_cast<int>(Vec.size()) - 1; i++) {
       if (difMin > abs(Vec[i] - Vec[i + 1]))
@@ -28,7 +29,7 @@ int getMinDifferenceOne(const std::vector <int> Vec) {
 }
 
 int getMinDifference(const std::vector <int> Vec) {
-  int difMin = std::INT_MAX;
+  int difMin = INT_MAX;
   int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -46,7 +47,7 @@ int getMinDifference(const std::vector <int> Vec) {
   } else {
     if (modf > 0) {
       std::vector<int> tmp(modf + 1);
-      MPI_Recv(&tmp[0], modf + 1, MPI_INT, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+      MPI_Recv(&tmp[0], modf + 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
       int minD = getMinDifferenceOneProc(tmp);
       MPI_Send(&minD, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
