@@ -25,7 +25,7 @@ int getMinDifferenceOneProc(const std::vector <int> Vec) {
         difMin = abs(Vec[i] - Vec[i + 1]);
     }
   }
-  if (Vec.size == 1) {
+  if (Vec.size() == 1) {
     return 0;
   }
   return difMin;
