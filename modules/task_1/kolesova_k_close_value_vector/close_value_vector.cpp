@@ -17,7 +17,7 @@ std::vector<int> getRandomVector(int size) {
   return Vec;
 }
 
-int getMinDifferenceOne(const std::vector <int> Vec) {
+int getMinDifferenceOneProc(const std::vector <int> Vec) {
   int difMin = INT_MAX;
   if (Vec.size() != 0) {
     for (int i = 0; i < static_cast<int>(Vec.size()) - 1; i++) {
