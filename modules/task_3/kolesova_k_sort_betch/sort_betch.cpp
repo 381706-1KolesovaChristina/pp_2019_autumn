@@ -226,12 +226,12 @@ std::vector<double> sort(std::vector<double> vec, int size) {
   std::vector<double> tmp;
   std::vector<double> res(size);
   for (int i = 0; i < 8; i++) {
-    razr(vec, res, size, i);
+    razr(vec, resul, size, i);
     tmp = vec;
-    vec = res;
-    res = tmp;
+    vec = resul;
+    resul = tmp;
   }
-  last_razr(vec, res, size, 7);
+  last_razr(vec, resul, size, 7);
   return res;
 }
 
@@ -326,7 +326,7 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
       MPI_Sendrecv(&size_del, 1, MPI_INT, rank - displs_proc, 0,
         &length_recv, 1, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
 
-      res.resize(length_recv);
+      resul.resize(length_recv);
 
       MPI_Sendrecv(local_vec.data(), size_del / 2 + size_del % 2, MPI_INT, rank - displs_proc, 0,
         &res.front(), length_recv, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
