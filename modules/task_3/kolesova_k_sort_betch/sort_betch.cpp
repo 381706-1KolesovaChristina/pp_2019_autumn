@@ -20,11 +20,11 @@ std::vector<double> randVec(int size) {
   return vec;
 }
 
-std::vector<int> separation(std::vector<int> vec) {
+std::vector<double> separation(std::vector<double> vec) {
   size_loc = vec.size();
   int sep;
   sep = size_loc / 2 + size_loc % 2;
-  std::vector<int> tmp(size_loc);
+  std::vector<double> tmp(size_loc);
 
   for (int i = 0; i < sep; i++) {
     tmp[i] = vec[2 * i];
@@ -38,7 +38,7 @@ std::vector<int> separation(std::vector<int> vec) {
   return vec;
 }
 
-std::vector<int> merge_even(const std::vector<int>& vec1, const std::vector<int>& vec2) {
+std::vector<double> merge_even(const std::vector<double>& vec1, const std::vector<double>& vec2) {
   int size_loc1;
   size_loc1 = vec1.size();
   int size_loc2;
@@ -46,7 +46,7 @@ std::vector<int> merge_even(const std::vector<int>& vec1, const std::vector<int>
   int sep1;
   sep1 = size_loc1 / 2 + size_loc1 % 2;
 
-  std::vector<int> res(sep1 + size_loc2);
+  std::vector<double> res(sep1 + size_loc2);
   int j = 0, k = 0;
   int l = 0;
 
@@ -79,7 +79,7 @@ std::vector<int> merge_even(const std::vector<int>& vec1, const std::vector<int>
   return res;
 }
 
-std::vector<int> merge_odd(const std::vector<int>& vec1, const std::vector<int>& vec2) {
+std::vector<double> merge_odd(const std::vector<double>& vec1, const std::vector<double>& vec2) {
   int size_loc1;
   size_loc1 = vec1.size();
   int size_loc2;
@@ -120,12 +120,12 @@ std::vector<int> merge_odd(const std::vector<int>& vec1, const std::vector<int>&
   return res;
 }
 
-std::vector<int>  merger(std::vector<int> vec, int even_size, int odd_size) {
+std::vector<double>  merger(std::vector<double> vec, int even_size, int odd_size) {
   int size_loc;
   size_loc = vec.size();
   int sep;
   sep = size_loc / 2 + size_loc % 2;
-  std::vector<int> res(size_loc);
+  std::vector<double> res(size_loc);
   int j = 0, k = 0, l = 0;
 
   for (j; (j < even_size && k < odd_size); j++) {
@@ -224,9 +224,9 @@ std::vector<double> last_razr(std::vector<double> vec1, std::vector<double> vec2
   return vec2;
 }
 
-void sort(std::vector<int> vec, int size) {
-  std::vector<int> tmp;
-  std::vector<int> res(size);
+void sort(std::vector<double> vec, int size) {
+  std::vector<double> tmp;
+  std::vector<double> res(size);
   for (int i = 0; i < 8; i++) {
     razr(vec, res, size, i);
     tmp = vec;
@@ -236,11 +236,11 @@ void sort(std::vector<int> vec, int size) {
   last_razr(vec, res, size, 7);
 }
 
-std::vector<int> merge_batcher(std::vector<int> global_vec, int size_vec) {
-  std::vector<int> local_vec;
-  std::vector<int> res;
-  std::vector<int> even;
-  std::vector<int> odd;
+std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) {
+  std::vector<double> local_vec;
+  std::vector<double> res;
+  std::vector<double> even;
+  std::vector<double> odd;
   int merged_proc;
   int displs_proc;
   int size_del;
