@@ -1,0 +1,341 @@
+// Copyright 2019 Kolesova Kristina
+#include <mpi.h>
+#include <vector>
+#include <ctime>
+#include <random>
+#include <utility>
+#include <algorithm>
+#include "../../../modules/task_3/kolesova_k_sort_betch/sort_betch.h"
+
+std::vector<double> randVec(int size) {
+  std::mt19937 gen(time(0));
+  std::uniform_real_distribution<> urd(1, 100);
+
+  std::vector<double> vec(size);
+
+  for (int i = 0; i < size; ++i) {
+    vec[i] = urd(gen);
+  }
+
+  return vec;
+}
+
+std::vector<double> separation(std::vector<double> vec) {
+  int size_loc = vec.size();
+  int sep;
+  sep = size_loc / 2 + size_loc % 2;
+  std::vector<double> tmp(size_loc);
+
+  for (int i = 0; i < sep; i++) {
+    tmp[i] = vec[2 * i];
+  }
+  for (int i = 0; i < size_loc; i ++) {
+    tmp[sep + i] = vec[2 * i + 1];
+  }
+  for (int i = 0; i < size_loc; i++) {
+    vec[i] = tmp[i];
+  }
+  return vec;
+}
+
+std::vector<double> merge_even(const std::vector<double>& vec1, const std::vector<double>& vec2) {
+  int size_loc1;
+  size_loc1 = vec1.size();
+  int size_loc2;
+  size_loc2 = vec2.size();
+  int sep1;
+  sep1 = size_loc1 / 2 + size_loc1 % 2;
+
+  std::vector<double> res(sep1 + size_loc2);
+  int j = 0, k = 0;
+  int l = 0;
+
+  while ((j < sep1) && (k < (size_loc2))) {
+    if (vec1[j] > vec2[k]) {
+      res[l] = vec2[k];
+      l++;
+      k++;
+    } else {
+      res[l] = vec1[j];
+      l++;
+      j++;
+    }
+  }
+
+  if (k < size_loc2) {
+    for (k=k; k < size_loc2; k++) {
+      res[l] = vec2[k];
+      l++;
+    }
+  }
+
+  if (j < sep1) {
+    for (j=j; j < sep1; j++) {
+      res[l] = vec1[j];
+      l++;
+    }
+  }
+
+  return res;
+}
+
+std::vector<double> merge_odd(const std::vector<double>& vec1, const std::vector<double>& vec2) {
+  int size_loc1;
+  size_loc1 = vec1.size();
+  int size_loc2;
+  size_loc2 = vec2.size();
+  int sep1;
+  sep1 = size_loc1 / 2 + size_loc1 % 2;
+
+  std::vector<double> res(size_loc1 / 2 + size_loc2);
+  int j = sep1, k = 0;
+  int l = 0;
+
+  while ((j < sep1) && (k < (size_loc2))) {
+    if (vec1[j] > vec2[k]) {
+      res[l] = vec2[k];
+      l++;
+      k++;
+    } else {
+      res[l] = vec1[j];
+      l++;
+      j++;
+    }
+  }
+
+  if (k < size_loc2) {
+    for (k=k; k < size_loc2; k++) {
+      res[l] = vec2[k];
+      l++;
+    }
+  }
+
+  if (j < size_loc1) {
+    for (j=j; j < sep1; j++) {
+      res[l] = vec1[j];
+      l++;
+    }
+  }
+
+  return res;
+}
+
+std::vector<double>  merger(std::vector<double> vec, int even_size, int odd_size) {
+  int size_loc;
+  size_loc = vec.size();
+  std::vector<double> res(size_loc);
+  int j = 0, k = 0, l = 0;
+
+  for (j=j; (j < even_size && k < odd_size); j++) {
+    res[l] = vec[j];
+    l++;
+    res[l] = vec[even_size + k];
+    k++; l++;
+  }
+
+  if (j < even_size) {
+    for (j=j; j < even_size; j++) {
+      res[l] = vec[j];
+      l++;
+    }
+  }
+
+  for (unsigned int i = 0; i < res.size(); i++) {
+    if (res[i] > res[i + 1]) {
+      double t = res[i];
+      res[i] = res[i + 1];
+      res[i + 1] = t;
+    }
+  }
+
+  return res;
+}
+
+std::vector<double> razr(std::vector<double> vec1, std::vector<double> vec2, int size, int byte) {
+  unsigned char *tmp = (unsigned char *)vec1.data();
+  int tmp_dat;
+  int index;
+  int counter;
+  int count[256];
+
+  tmp_dat = 0;
+  for (int i = 0; i < 256; i++)
+    count[i] = 0;
+
+  for (int i = 0; i < size; i++) {
+    index = tmp[8 * i + byte];
+    count[index]++;
+  }
+
+  for (int i = 0; i < 256; i++) {
+    int tm = count[i];
+    count[i] = tmp_dat;
+    tmp_dat = tmp_dat + tm;
+  }
+
+  for (int i = 0; i < size; i++) {
+    index = tmp[8 * i + byte];
+    counter = count[index];
+    vec2[counter] = vec1[i];
+    count[index]++;
+  }
+  return vec2;
+}
+
+std::vector<double> last_razr(std::vector<double> vec1, std::vector<double> vec2, int byte, int size) {
+  unsigned char *tmp = (unsigned char *)vec1.data();
+  int tmp_dat;
+  int index;
+  int counter;
+  int count[256];
+
+  tmp_dat = 0;
+  for (int i = 0; i < 256; i++)
+    count[i] = 0;
+
+  for (int i = 0; i < size; i++) {
+    index = tmp[8 * i + byte];
+    count[index]++;
+  }
+
+  for (int i = 255; i >= 128; i--) {
+    count[i] = count[i] + tmp_dat;
+    tmp_dat = count[i];
+  }
+  for (int i = 0; i < 128; i++) {
+    int tm = count[i];
+    count[i] = tmp_dat;
+    tmp_dat = tmp_dat + tm;
+  }
+
+  for (int i = 0; i < size; i++) {
+    index = tmp[8 * i + byte];
+    counter = count[index];
+    if (index < 128) {
+      vec2[counter] = vec1[i];
+      count[index]++;
+    } else {
+      count[index]--;
+      vec2[counter] = vec1[i];
+    }
+  }
+  return vec2;
+}
+
+std::vector<double> sort(std::vector<double> vec, int size) {
+  std::vector<double> tmp(size);
+  std::vector<double> res(size);
+  for (int i = 0; i < 8; i++) {
+    razr(vec, res, size, i);
+    tmp = vec;
+    vec = res;
+    res = tmp;
+  }
+  last_razr(vec, res, size, 7);
+  return res;
+}
+
+std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) {
+  std::vector<double> local_vec;
+  std::vector<double> resul;
+  std::vector<double> even;
+  std::vector<double> odd;
+  int merged_proc;
+  int displs_proc;
+  int size_del;
+  int length_recv;
+
+  int size;
+  int rank;
+  int sep;
+  int del;
+  int res;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  del = size_vec / size;
+  res = size_vec % size;
+
+  int* countsend = new int[size];
+  int* dis = new int[size];
+
+  if (rank == 0) {
+    local_vec.resize(del + res);
+  } else {
+    local_vec.resize(del);
+  }
+
+  for (int i = 0; i < size; i++) {
+    dis[i] = 0;
+    if (i != 0) {
+      countsend[i] = del;
+    } else {
+      countsend[i] = del + res;
+    }
+    if (i > 0) {
+      dis[i] = dis[i - 1] + countsend[i - 1];
+    }
+  }
+
+  MPI_Scatterv(global_vec.data(), countsend, dis, MPI_INT,
+    &local_vec.front(), countsend[rank], MPI_INT, 0, MPI_COMM_WORLD);
+
+  int numder = static_cast<int>(round(log2(size)));
+
+  local_vec = sort(local_vec, size_vec);
+  local_vec = separation(local_vec);
+  merged_proc = 2;
+  displs_proc = 1;
+  sep = length_recv / 2 + length_recv % 2;
+
+  MPI_Status status;
+
+  for (int i = 0; i < numder; i++) {
+    if ((rank % merged_proc == 0) && (rank + displs_proc < size)) {
+      size_del = local_vec.size() / 2;
+
+      MPI_Sendrecv(&size_del, 1, MPI_INT, rank + displs_proc, 0,
+        &length_recv, 1, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
+
+      resul.resize(sep);
+
+      MPI_Sendrecv(&local_vec[sep], size_del, MPI_INT, rank + displs_proc, 0,
+        &resul.front(), sep, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
+
+      even = merge_even(local_vec, resul);
+
+      odd.resize(length_recv / 2 + local_vec.size() / 2);
+
+      MPI_Recv(&odd.front(), length_recv / 2 + local_vec.size() / 2, MPI_INT, rank + displs_proc,
+        0, MPI_COMM_WORLD, &status);
+
+      local_vec.resize(even.size() + odd.size());
+
+      std::copy(even.begin(), even.end(), local_vec.begin());
+      std::copy(odd.begin(), odd.end(), local_vec.begin() + even.size());
+
+      // if (numder - i == 1 )
+      //   local_vec = merger(local_vec, even.size(), odd.size());
+      // else
+        local_vec = merger(local_vec, even.size(), odd.size());
+    }
+
+    if (rank - displs_proc >= 0 && (rank - displs_proc) % merged_proc == 0) {
+      size_del = local_vec.size();
+
+      MPI_Sendrecv(&size_del, 1, MPI_INT, rank - displs_proc, 0,
+        &length_recv, 1, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
+
+      resul.resize(length_recv);
+
+      MPI_Sendrecv(local_vec.data(), size_del / 2 + size_del % 2, MPI_INT, rank - displs_proc, 0,
+        &resul.front(), length_recv, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
+
+      odd = merge_odd(local_vec, resul);
+      MPI_Send(odd.data(), odd.size(), MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD);
+    }
+    merged_proc *= 2;
+    displs_proc *= 2;
+  }
+  return local_vec;
+}
