@@ -223,15 +223,15 @@ std::vector<double> last_razr(std::vector<double> vec1, std::vector<double> vec2
 }
 
 std::vector<double> sort(std::vector<double> vec, int size) {
-  std::vector<double> tmp;
+  std::vector<double> tmp(size);
   std::vector<double> res(size);
   for (int i = 0; i < 8; i++) {
-    razr(vec, resul, size, i);
+    razr(vec, res, size, i);
     tmp = vec;
-    vec = resul;
-    resul = tmp;
+    vec = res;
+    res = tmp;
   }
-  last_razr(vec, resul, size, 7);
+  last_razr(vec, res, size, 7);
   return res;
 }
 
