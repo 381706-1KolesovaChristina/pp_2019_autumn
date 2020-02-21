@@ -31,7 +31,7 @@ TEST(Sort_Batcher, Vec_50_Elem) {
 
   std::vector<double> parralel = merge_batcher(global_vec, size_vector);
   if (rank == 0) {
-    global_vec = sort(global_vec);
+    global_vec = sort(global_vec, size_vector);
     ASSERT_EQ(parralel, global_vec);
   }
 }
@@ -47,7 +47,7 @@ TEST(Sort_Batcher, Vec_100_Elem) {
 
   std::vector<double> parralel = merge_batcher(global_vec, size_vector);
   if (rank == 0) {
-    global_vec = sort(global_vec);
+    global_vec = sort(global_vec, size_vector);
     ASSERT_EQ(parralel, global_vec);
   }
 }
