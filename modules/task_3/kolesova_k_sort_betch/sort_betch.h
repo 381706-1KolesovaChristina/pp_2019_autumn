@@ -13,7 +13,7 @@ std::vector<double> merge_odd(const std::vector<double>& vec1, const std::vector
 std::vector<double>  merger(std::vector<double> vec, int even_size, int odd_size);
 std::vector<double> razr(std::vector<double> vec1, std::vector<double> vec2, int size, int byte);
 std::vector<double> last_razr(std::vector<double> vec1, std::vector<double> vec2, int byte, int size);
-void sort(std::vector<double> vec, int size);
+std::vector<double> sort(std::vector<double> vec, int size);
 std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec);
 
 #endif  // MODULES_TASK_3_KOLESOVA_K_SORT_BETCH_SORT_BETCH_H_

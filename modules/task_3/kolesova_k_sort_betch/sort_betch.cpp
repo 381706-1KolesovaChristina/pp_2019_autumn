@@ -224,7 +224,7 @@ std::vector<double> last_razr(std::vector<double> vec1, std::vector<double> vec2
   return vec2;
 }
 
-void sort(std::vector<double> vec, int size) {
+std::vector<double> sort(std::vector<double> vec, int size) {
   std::vector<double> tmp;
   std::vector<double> res(size);
   for (int i = 0; i < 8; i++) {
@@ -234,6 +234,7 @@ void sort(std::vector<double> vec, int size) {
     res = tmp;
   }
   last_razr(vec, res, size, 7);
+  return res;
 }
 
 std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) {
