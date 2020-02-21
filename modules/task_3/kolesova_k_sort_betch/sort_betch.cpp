@@ -21,7 +21,7 @@ std::vector<double> randVec(int size) {
 }
 
 std::vector<double> separation(std::vector<double> vec) {
-  size_loc = vec.size();
+  int size_loc = vec.size();
   int sep;
   sep = size_loc / 2 + size_loc % 2;
   std::vector<double> tmp(size_loc);
@@ -63,14 +63,14 @@ std::vector<double> merge_even(const std::vector<double>& vec1, const std::vecto
   }
 
   if (k < size_loc2) {
-    for (k; k < size_loc2; k++) {
+    for (k=k; k < size_loc2; k++) {
       res[l] = vec2[k];
       l++;
     }
   }
 
   if (j < sep1) {
-    for (j; j < sep1; j++) {
+    for (j=j; j < sep1; j++) {
       res[l] = vec1[j];
       l++;
     }
@@ -87,7 +87,7 @@ std::vector<double> merge_odd(const std::vector<double>& vec1, const std::vector
   int sep1;
   sep1 = size_loc1 / 2 + size_loc1 % 2;
 
-  std::vector<int> res(size_loc1 / 2 + size_loc2);
+  std::vector<double> res(size_loc1 / 2 + size_loc2);
   int j = sep1, k = 0;
   int l = 0;
 
@@ -104,14 +104,14 @@ std::vector<double> merge_odd(const std::vector<double>& vec1, const std::vector
   }
 
   if (k < size_loc2) {
-    for (k; k < size_loc2; k++) {
+    for (k=k; k < size_loc2; k++) {
       res[l] = vec2[k];
       l++;
     }
   }
 
   if (j < size_loc1) {
-    for (j; j < sep1; j++) {
+    for (j=j; j < sep1; j++) {
       res[l] = vec1[j];
       l++;
     }
@@ -128,7 +128,7 @@ std::vector<double>  merger(std::vector<double> vec, int even_size, int odd_size
   std::vector<double> res(size_loc);
   int j = 0, k = 0, l = 0;
 
-  for (j; (j < even_size && k < odd_size); j++) {
+  for (j=j; (j < even_size && k < odd_size); j++) {
     res[l] = vec[j];
     l++;
     res[l] = vec[even_size + k];
@@ -136,15 +136,15 @@ std::vector<double>  merger(std::vector<double> vec, int even_size, int odd_size
   }
 
   if (j < even_size) {
-    for (j; j < even_size; j++) {
+    for (j=j; j < even_size; j++) {
       res[l] = vec[j];
       l++;
     }
   }
 
-  for (int i = 0; i < res.size(); i++) {
+  for (unsigned int i = 0; i < res.size(); i++) {
     if (res[i] > res[i + 1]) {
-      t = res[i];
+      double t = res[i];
       res[i] = res[i + 1];
       res[i + 1] = t;
     }
@@ -177,8 +177,8 @@ std::vector<double> razr(std::vector<double> vec1, std::vector<double> vec2, int
 
   for (int i = 0; i < size; i++) {
     index = tmp[8 * i + byte];
-    count = count[index];
-    vec2[count] = vec1[i];
+    counter = count[index];
+    vec2[counter] = vec1[i];
     count[index]++;
   }
   return vec2;
@@ -188,10 +188,10 @@ std::vector<double> last_razr(std::vector<double> vec1, std::vector<double> vec2
   unsigned char *tmp = (unsigned char *)vec1.data();
   int tmp_dat;
   int index;
-  int couter;
+  int counter;
   int count[256];
 
-  tmp_dar = 0;
+  tmp_dat = 0;
   for (int i = 0; i < 256; i++)
     count[i] = 0;
 
@@ -246,31 +246,33 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
   int displs_proc;
   int size_del;
   int length_recv;
-  int* countsend = new int[size];
-  int* dis = new int[size];
+
   int size;
   int rank;
   int sep;
-  const int del;
-  const int res;
+  int del;
+  int res;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   del = size_vec / size;
   res = size_vec % size;
 
+  int* countsend = new int[size];
+  int* dis = new int[size];
+
   if (rank == 0) {
-    local_vec.resize(delta + residue);
+    local_vec.resize(del + res);
   } else {
-    local_vec.resize(delta);
+    local_vec.resize(del);
   }
 
   for (int i = 0; i < size; i++) {
     dis[i] = 0;
     if (i != 0) {
-      countsend[i] = delta;
+      countsend[i] = del;
     } else {
-      countsend[i] = delta + residue;
+      countsend[i] = del + res;
     }
     if (i > 0) {
       dis[i] = dis[i - 1] + countsend[i - 1];
@@ -280,9 +282,9 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
   MPI_Scatterv(global_vec.data(), countsend, dis, MPI_INT,
     &local_vec.front(), countsend[rank], MPI_INT, 0, MPI_COMM_WORLD);
 
-  int numder = static_cast<int>(round(log2(size));
+  int numder = static_cast<int>(round(log2(size)));
 
-  local_vec = sort(local_vec);
+  local_vec = sort(local_vec, size_vec);
   local_vec = separation(local_vec);
   merged_proc = 2;
   displs_proc = 1;
@@ -294,13 +296,13 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
     if ((rank % merged_proc == 0) && (rank + displs_proc < size)) {
       size_del = local_vec.size() / 2;
 
-      MPI_Isend(&size_del, 1, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
-      MPI_Irecv(&length_recv, 1, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(&size_del, 1, MPI_INT, rank + displs_proc, 0, 
+        &length_recv, 1, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
 
       res.resize(sep);
 
-      MPI_Isend(&local_vec[sep], size_del, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
-      MPI_Irecv(&res.front(), sep, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(&local_vec[sep], size_del, MPI_INT, rank + displs_proc, 0,
+        &res.front(), sep, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
 
       even = merge_even(local_vec, res);
 
@@ -314,22 +316,22 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
       std::copy(even.begin(), even.end(), local_vec.begin());
       std::copy(odd.begin(), odd.end(), local_vec.begin() + even.size());
 
-      if (numder - i == 1 )
-        local_vec = transpos(local_vec, even.size(), odd.size());
-      else
-        local_vec = merge(local_vec, even.size(), odd.size());
+      // if (numder - i == 1 )
+      //   local_vec = merger(local_vec, even.size(), odd.size());
+      // else
+        local_vec = merger(local_vec, even.size(), odd.size());
     }
 
     if (rank - displs_proc >= 0 && (rank - displs_proc) % merged_proc == 0) {
       size_del = local_vec.size();
 
-      MPI_Isend(&size_del, 1, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
-      MPI_Irecv(&length_recv, 1, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(&size_del, 1, MPI_INT, rank - displs_proc, 0,
+        &length_recv, 1, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
 
       res.resize(length_recv);
 
-      MPI_Isend(local_vec.data(), size_del / 2 + size_del % 2, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
-      MPI_Irecv(&res.front(), length_recv, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(local_vec.data(), size_del / 2 + size_del % 2, MPI_INT, rank - displs_proc, 0,
+        &res.front(), length_recv, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
 
       odd = merge_odd(local_vec, res);
       MPI_Send(odd.data(), odd.size(), MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD);
