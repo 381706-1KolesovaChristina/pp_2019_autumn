@@ -329,9 +329,9 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
       resul.resize(length_recv);
 
       MPI_Sendrecv(local_vec.data(), size_del / 2 + size_del % 2, MPI_INT, rank - displs_proc, 0,
-        &res.front(), length_recv, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
+        &resul.front(), length_recv, MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD, &status);
 
-      odd = merge_odd(local_vec, res);
+      odd = merge_odd(local_vec, resul);
       MPI_Send(odd.data(), odd.size(), MPI_INT, rank - displs_proc, 0, MPI_COMM_WORLD);
     }
     merged_proc *= 2;
