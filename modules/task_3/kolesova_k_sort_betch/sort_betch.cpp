@@ -296,7 +296,7 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
     if ((rank % merged_proc == 0) && (rank + displs_proc < size)) {
       size_del = local_vec.size() / 2;
 
-      MPI_Sendrecv(&size_del, 1, MPI_INT, rank + displs_proc, 0, 
+      MPI_Sendrecv(&size_del, 1, MPI_INT, rank + displs_proc, 0,
         &length_recv, 1, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
 
       res.resize(sep);
