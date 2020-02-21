@@ -123,8 +123,6 @@ std::vector<double> merge_odd(const std::vector<double>& vec1, const std::vector
 std::vector<double>  merger(std::vector<double> vec, int even_size, int odd_size) {
   int size_loc;
   size_loc = vec.size();
-  int sep;
-  sep = size_loc / 2 + size_loc % 2;
   std::vector<double> res(size_loc);
   int j = 0, k = 0, l = 0;
 
@@ -157,7 +155,7 @@ std::vector<double> razr(std::vector<double> vec1, std::vector<double> vec2, int
   unsigned char *tmp = (unsigned char *)vec1.data();
   int tmp_dat;
   int index;
-  int couter;
+  int counter;
   int count[256];
 
   tmp_dat = 0;
@@ -239,7 +237,7 @@ std::vector<double> sort(std::vector<double> vec, int size) {
 
 std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) {
   std::vector<double> local_vec;
-  std::vector<double> res;
+  std::vector<double> resul;
   std::vector<double> even;
   std::vector<double> odd;
   int merged_proc;
@@ -299,12 +297,12 @@ std::vector<double> merge_batcher(std::vector<double> global_vec, int size_vec) 
       MPI_Sendrecv(&size_del, 1, MPI_INT, rank + displs_proc, 0,
         &length_recv, 1, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
 
-      res.resize(sep);
+      resul.resize(sep);
 
       MPI_Sendrecv(&local_vec[sep], size_del, MPI_INT, rank + displs_proc, 0,
-        &res.front(), sep, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
+        &resul.front(), sep, MPI_INT, rank + displs_proc, 0, MPI_COMM_WORLD, &status);
 
-      even = merge_even(local_vec, res);
+      even = merge_even(local_vec, resul);
 
       odd.resize(length_recv / 2 + local_vec.size() / 2);
 
